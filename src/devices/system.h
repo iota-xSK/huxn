@@ -12,7 +12,7 @@ WITH REGARD TO THIS SOFTWARE.
 #define RAM_PAGES 0x10
 
 int system_error(char *msg, const char *err);
-int system_boot(Uint8 *ram, char *rom_path, int has_args);
+int system_boot(Uint8 *ram, Uint8 *rom, char *ram_path, char *rom_path,  int has_args);
 int system_reboot(int soft);
 
 Uint8 system_dei(Uint8 addr);

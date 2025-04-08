@@ -466,6 +466,7 @@ main(int argc, char **argv)
 {
 	int i = 1;
 	char *rom_path;
+	char *ram_path;
 	/* flags */
 	if(argc > 1 && argv[i][0] == '-') {
 		if(!strcmp(argv[i], "-v"))
@@ -479,10 +480,16 @@ main(int argc, char **argv)
 		i++;
 	}
 	/* init */
-	rom_path = i == argc ? "boot.rom" : argv[i++];
+	if (i == argc) {
+		rom_path = "boot.rom";
+		ram_path = "bootram.rom";
+	} else {
+		rom_path = argv[i++];
+		ram_path = argv[i++];
+	}
 	if(!emu_init())
 		return system_error("Init", "Failed to initialize varvara.");
-	if(!system_boot((Uint8 *)calloc(0x10000 * RAM_PAGES + 1, sizeof(Uint8)), rom_path, argc > i))
+	if(!system_boot((Uint8 *)calloc(0x10000 * RAM_PAGES +  1, sizeof(Uint8)), (Uint8 *)calloc(0x10000 * RAM_PAGES +  1, sizeof(Uint8)), ram_path, rom_path, argc > i))
 		return system_error("usage:", "uxnemu [-v | -f | -2x | -3x] file.rom [args...]");
 	/* start */
 	console_arguments(i, argc, argv);

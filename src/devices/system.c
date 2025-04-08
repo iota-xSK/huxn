@@ -14,7 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 WITH REGARD TO THIS SOFTWARE.
 */
 
-char *boot_path;
+char *boot_rom_path;
+char *boot_ram_path;
 
 static void
 system_print(char *name, Stack *s)
@@ -27,16 +28,23 @@ system_print(char *name, Stack *s)
 }
 
 static int
-system_load(Uint8 *ram, char *rom_path)
+system_load(Uint8 *rom, Uint8 *ram, char *rom_path, char *ram_path)
 {
-	FILE *f = fopen(rom_path, "rb");
-	if(f) {
-		int i = 0, l = fread(ram, 0x10000 - PAGE_PROGRAM, 1, f);
+	FILE *program = fopen(rom_path, "rb");
+	if(program) {
+		int i = 0, l = fread(rom, 0x10000 - PAGE_PROGRAM, 1, program);
 		while(l && ++i < RAM_PAGES)
-			l = fread(ram + 0x10000 * i - PAGE_PROGRAM, 0x10000, 1, f);
-		fclose(f);
+			l = fread(rom + 0x10000 * i - PAGE_PROGRAM, 0x10000, 1, program);
+		fclose(program);
 	}
-	return !!f;
+	FILE *raminit = fopen(rom_path, "rb");
+	if(raminit) {
+		int i = 0, l = fread(ram, 0x10000 - PAGE_PROGRAM, 1, raminit);
+		while(l && ++i < RAM_PAGES)
+			l = fread(ram + 0x10000 * i - PAGE_PROGRAM, 0x10000, 1, raminit);
+		fclose(raminit);
+	}
+	return !!raminit && !!program;
 }
 
 int
@@ -47,13 +55,16 @@ system_error(char *msg, const char *err)
 }
 
 int
-system_boot(Uint8 *ram, char *rom_path, int has_args)
+system_boot(Uint8 *ram, Uint8 *rom, char *ram_path, char *rom_path,  int has_args)
 {
 	uxn.ram = ram;
-	boot_path = rom_path;
+	uxn.rom = rom;
+	boot_ram_path = ram_path;
+	boot_rom_path = rom_path;
 	uxn.dev[0x17] = has_args;
-	if(ram && system_load(uxn.ram + PAGE_PROGRAM, rom_path))
+	if(ram && rom && system_load(uxn.rom + PAGE_PROGRAM, uxn.ram + PAGE_PROGRAM, rom_path, ram_path))
 		return uxn_eval(PAGE_PROGRAM);
+
 	return 0;
 }
 
@@ -64,7 +75,7 @@ system_reboot(int soft)
 	for(i = 0x0; i < 0x100; i++) uxn.dev[i] = 0;
 	for(i = soft ? 0x100 : 0; i < 0x10000; i++) uxn.ram[i] = 0;
 	uxn.wst.ptr = uxn.rst.ptr = 0;
-	return system_boot(uxn.ram, boot_path, 0);
+	return system_boot(uxn.ram, uxn.rom, boot_ram_path, boot_rom_path, 0);
 }
 
 /* IO */
