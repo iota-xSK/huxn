@@ -1,10 +1,7 @@
 # Uxn
 
-An assembler and emulator for the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in ANSI C. 
-
-## Download binaries
-
-Binaries are available for 64-bit x86 computers running [Linux](https://drive.100r.co/uxn/uxn-essentials-lin64.tar.gz), [Windows](https://drive.100r.co/uxn/uxn-essentials-win64.zip) and [macOS](https://drive.100r.co/uxn/uxn-essentials-mac64.tar.gz).
+An assembler and emulator for a modified, harvard architecture version the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in C. 
+Currently the assembler is completely non-functional. Rom loading is clunky and will change with the introduction of a new file format. 
 
 ## Build
 
@@ -109,16 +106,3 @@ uxnemu orca.rom | shim
 - `LALT` B
 - `LSHIFT` SEL 
 - `HOME` START
-
-## Need a hand?
-
-The following resources are a good place to start:
-
-* [XXIIVV — uxntal](https://wiki.xxiivv.com/site/uxntal.html)
-* [XXIIVV — uxntal reference](https://wiki.xxiivv.com/site/uxntal_reference.html)
-* [compudanzas — uxn tutorial](https://compudanzas.net/uxn_tutorial.html)
-* [Fediverse — #uxn tag](https://merveilles.town/tags/uxn)
-
-## Contributing
-
-Submit patches using [`git send-email`](https://git-send-email.io/) to the [~rabbits/public-inbox mailing list](https://lists.sr.ht/~rabbits/public-inbox).
